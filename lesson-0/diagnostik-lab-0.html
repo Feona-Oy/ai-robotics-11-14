@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rover Lab: Drift Analysis Quiz</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace, sans-serif;
+            background-color: #0d1117;
+            color: #58a6ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.15);
+            width: 500px;
+            text-align: center;
+        }
+        .rover-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin-bottom: 15px;
+        }
+        h2 { 
+            color: #0fff95; 
+            font-size: 18px; 
+            margin-bottom: 5px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        p { color: #c9d1d9; font-size: 14px; line-height: 1.4; text-align: left; }
+        .btn {
+            display: block;
+            width: 100%;
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .btn:hover:not(:disabled) {
+            border-color: #0fff95;
+            background: #30363d;
+            color: #0fff95;
+        }
+        .btn.correct {
+            background: rgba(15, 155, 88, 0.25) !important;
+            border-color: #0fff95 !important;
+            color: #0fff95 !important;
+        }
+        .btn.incorrect {
+            background: rgba(192, 57, 43, 0.25) !important;
+            border-color: #f85149 !important;
+            color: #f85149 !important;
+        }
+        .btn:disabled {
+            cursor: default;
+        }
+        #feedback {
+            font-size: 13px;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            text-align: left;
+        }
+        .feedback-correct {
+            background: rgba(15, 155, 88, 0.1);
+            color: #0fff95;
+            border: 1px solid #0fff95;
+        }
+        .feedback-incorrect {
+            background: rgba(192, 57, 43, 0.1);
+            color: #f85149;
+            border: 1px solid #f85149;
+        }
+        #next-btn, #restart-btn {
+            display: none;
+            margin-top: 15px;
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            font-family: inherit;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        #next-btn:hover { background: #2ea043; }
+        #restart-btn { background: #1f6feb; }
+        #restart-btn:hover { background: #388bfd; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-box">
+    <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" class="rover-img">
+    <h2>Rover Telemetry Lab</h2>
+    <div class="subtitle">Session 1: Drift Analysis Check</div>
+    <p id="question-text">Loading telemetry data...</p>
+    <div id="answers-container"></div>
+    <div id="feedback"></div>
+    <button id="next-btn" onclick="nextQuestion()">Next Command ➡️</button>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "We ran the simulation code twice with the exact same drift value, but the success count changed. Why?",
+            answers: [
+                { text: "A) There is a software bug that needs a complete rewrite", correct: false },
+                { text: "B) Random noise and real-world uncertainty are built into the simulator", correct: true },
+                { text: "C) The CPU got overheated and processed data slower", correct: false }
+            ],
+            explanation: "Correct! Real-world robotics and proper simulators use random noise because physical environments are never 100% predictable."
+        },
+        {
+            question: "At what motor drift setting does the rover lose reliability and start failing most missions?",
+            answers: [
+                { text: "A) At drift 0 (Perfect motors)", correct: false },
+                { text: "B) At drift 1.5 (Minor deviation)", correct: false },
+                { text: "C) At drift 5 or 10 (High deviation)", correct: true }
+            ],
+            explanation: "Correct! Higher drift levels like 5 or 10 pull the mobile robot heavily off course, causing it to miss waypoints."
+        },
+        {
+            question: "What built-in system do you need to program so the rover automatically adjusts itself at drift 10?",
+            answers: [
+                { text: "A) Line sensors to check position and apply feedback correction on the fly", correct: true },
+                { text: "B) Shut down all motors and activate emergency brakes", correct: false },
+                { text: "C) Increase the loop speed to override physical friction", correct: false }
+            ],
+            explanation: "Correct! Using line sensors for on-the-fly corrections introduces feedback control—the core mechanism of smart mobile robotics!"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    const textEl = document.getElementById("question-text");
+    const answersEl = document.getElementById("answers-container");
+    const feedbackEl = document.getElementById("feedback");
+    const nextBtn = document.getElementById("next-btn");
+
+    function loadQuestion() {
+        answered = false;
+        feedbackEl.style.display = "none";
+        nextBtn.style.display = "none";
+
+        const q = quizData[currentQuestion];
+        textEl.textContent = `[Mission Q${currentQuestion + 1}/${quizData.length}] ${q.question}`;
+        answersEl.innerHTML = "";
+
+        q.answers.forEach((ans, index) => {
+            const btn = document.createElement("button");
+            btn.textContent = ans.text;
+            btn.className = "btn";
+            btn.onclick = () => selectAnswer(index, ans.correct);
+            answersEl.appendChild(btn);
+        });
+    }
+
+    function selectAnswer(selectedIndex, isCorrect) {
+        if (answered) return;
+        answered = true;
+
+        const q = quizData[currentQuestion];
+        const buttons = answersEl.getElementsByClassName("btn");
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = true;
+            if (q.answers[i].correct) {
+                buttons[i].classList.add("correct");
+            } else if (i === selectedIndex && !isCorrect) {
+                buttons[i].classList.add("incorrect");
+            }
+        }
+
+        feedbackEl.style.display = "block";
+        if (isCorrect) {
+            score++;
+            feedbackEl.className = "feedback-correct";
+            feedbackEl.innerHTML = `<strong>STATUS: SUCCESS</strong><br>${q.explanation}`;
+        } else {
+            feedbackEl.className = "feedback-incorrect";
+            feedbackEl.innerHTML = `<strong>STATUS: ERROR DETECTED</strong><br>${q.explanation}`;
+        }
+
+        if (currentQuestion < quizData.length - 1) {
+            nextBtn.style.display = "block";
+        } else {
+            setTimeout(() => {
+                nextBtn.style.display = "none";
+                document.getElementById("quiz-box").innerHTML = `
+                    <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 15px;">
+                    <h2>Diagnostic Complete 🚀</h2>
+                    <p style="text-align: center; margin: 15px 0;">Final Score: <strong>${score} / ${quizData.length}</strong></p>
+                    <p style="text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 20px;">
+                        ${score === quizData.length ? "System nominal! You're ready for advanced robotics logic." : "Review the lab notes and run diagnostics again to optimize your score."}
+                    </p>
+                    <button id="restart-btn" class="btn" style="text-align: center;" onclick="location.reload()">🚀 Run Mission Again</button>
+                `;
+            }, 1200);
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+</body>
+</html>

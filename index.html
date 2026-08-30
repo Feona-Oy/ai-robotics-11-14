@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI & Robotics Control Center (Ages 11-14)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --panel:#E4E5E1; --face:#F5F5F2; --ink:#1D2126; --slate:#61666D; --hair:#C9CBC6;
+  --dye-C:58 78 168; --dye-0:97 102 109; 
+  --fill:.13;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --panel:#15171A; --face:#1E2126; --ink:#E9EAE6; --slate:#9AA0A6; --hair:#343840;
+    --dye-C:126 147 234; --dye-0:150 156 163; 
+    --fill:.2;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--panel); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px; margin:0 auto; padding:40px 28px 72px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--slate); margin:0 0 10px;
+}
+h1{
+  font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 118,"wght" 600;
+  font-size:clamp(30px,4.4vw,46px); line-height:1.05; letter-spacing:-.012em; margin:0 0 12px;
+}
+.sub{max-width:56ch; color:var(--slate); margin:0}
+header{border-bottom:1px solid var(--hair); padding-bottom:26px; margin-bottom:40px}
+
+.layout{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:30px; align-items:start}
+
+.readout{background:var(--face); border:1px solid var(--hair); border-radius:3px; padding:26px 26px 30px;}
+.rhead{display:flex; align-items:baseline; gap:12px; margin-bottom:4px}
+.code{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500; letter-spacing:.08em; padding:3px 8px; border-radius:2px; background:rgb(var(--d)/var(--fill)); color:rgb(var(--d))}
+.lvl{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--slate)}
+.rname{font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 116,"wght" 600; font-size:24px; line-height:1.12; letter-spacing:-.01em; margin:6px 0 2px}
+.rbranch{font-size:13px; color:var(--slate); margin:0 0 18px}
+
+.action-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 16px;
+    background: rgb(var(--d)/var(--fill));
+    color: rgb(var(--d));
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .05em;
+    text-decoration: none;
+    border: 1px solid rgb(var(--d));
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    background: rgb(var(--d));
+    color: var(--face);
+}
+
+ul{margin:0; padding:0; list-style:none}
+ul li{position:relative; padding-left:20px; margin-bottom:12px; font-size:14px; line-height: 1.5;}
+ul li::before{content:""; position:absolute; left:2px; top:11px; width:7px; height:1px; background:rgb(var(--d))}
+ul li .code { display: inline-block; margin-bottom: 4px; margin-right: 6px; }
+
+@media (max-width:560px){.wrap{padding:28px 15px 56px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Main Control Hub &middot; Ages 11-14</p>
+  <h1>AI & Robotics Lab</h1>
+  <p class="sub">Central index for course modules and simulation environments. Select a lab to launch the interactive workspace or review the underlying Python source code.</p>
+</header>
+
+<div class="layout">
+  
+  <aside class="readout" style="--d:var(--dye-C)">
+    <div class="rhead"><span class="code">Lesson 0</span><span class="lvl">Module</span></div>
+    <h2 class="rname">Telemetry & Drift Analysis</h2>
+    <p class="rbranch">Interactive Lab</p>
+    <a href="lesson-0/diagnostik-lab-0.html" class="action-btn">🚀 Open Interactive Lab Quiz (HTML)</a>
+  </aside>
+
+  <aside class="readout" style="--d:var(--dye-0)">
+    <div class="rhead"><span class="code">Python</span><span class="lvl">Environment</span></div>
+    <h2 class="rname">Sandbox Source Code</h2>
+    <p class="rbranch">Core Simulation Files</p>
+    <ul>
+      <li><span class="code">sandbox/task-0.py</span> Main experiment script for drift loops</li>
+      <li><span class="code">sandbox/rover_sim.py</span> Physics and simulation core module</li>
+      <li><span class="code">sandbox/less-0.py</span> Introductory lesson code</li>
+    </ul>
+  </aside>
+
+</div>
+
+</div>
+</body>
+</html>
