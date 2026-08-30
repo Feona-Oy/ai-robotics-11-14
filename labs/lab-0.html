@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Rover Lab: Drift Analysis Quiz</title>
+    <title>Rover Lab: Drift Analysis & Telemetry</title>
     <style>
         body {
             font-family: 'Courier New', Courier, monospace, sans-serif;
@@ -13,19 +13,20 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            font-size: 16px;
         }
         .container {
             background: #161b22;
             border: 2px solid #30363d;
-            padding: 25px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 0 25px rgba(0, 255, 204, 0.15);
-            width: 500px;
+            width: 580px;
             text-align: center;
         }
         .rover-img {
             width: 100%;
-            height: 160px;
+            height: 180px;
             object-fit: cover;
             border-radius: 8px;
             border: 1px solid #30363d;
@@ -33,32 +34,65 @@
         }
         h2 { 
             color: #0fff95; 
-            font-size: 18px; 
-            margin-bottom: 5px; 
+            font-size: 22px; 
+            margin-bottom: 6px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .subtitle {
-            font-size: 11px;
+            font-size: 13px;
             color: #8b949e;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             text-transform: uppercase;
         }
-        p { color: #c9d1d9; font-size: 14px; line-height: 1.4; text-align: left; }
+        p { color: #c9d1d9; font-size: 16px; line-height: 1.5; text-align: left; }
+        .instruction-box {
+            background: #0d1117;
+            border: 1px dashed #30363d;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .instruction-box h3 {
+            color: #0fff95;
+            font-size: 15px;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+        }
+        .instruction-box ol {
+            margin: 0;
+            padding-left: 20px;
+            color: #c9d1d9;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .instruction-box li {
+            margin-bottom: 8px;
+        }
+        .highlight-file {
+            color: #58a6ff;
+            background: #21262d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 15px;
+        }
         .btn {
             display: block;
             width: 100%;
             background: #21262d;
             color: #c9d1d9;
             border: 1px solid #30363d;
-            padding: 10px;
-            margin: 8px 0;
+            padding: 12px;
+            margin: 10px 0;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 15px;
             font-family: inherit;
             transition: all 0.2s ease;
             text-align: left;
+            text-decoration: none;
         }
         .btn:hover:not(:disabled) {
             border-color: #0fff95;
@@ -79,12 +113,13 @@
             cursor: default;
         }
         #feedback {
-            font-size: 13px;
-            margin-top: 12px;
-            padding: 10px;
+            font-size: 15px;
+            margin-top: 15px;
+            padding: 12px;
             border-radius: 6px;
             display: none;
             text-align: left;
+            line-height: 1.5;
         }
         .feedback-correct {
             background: rgba(15, 155, 88, 0.1);
@@ -96,24 +131,38 @@
             color: #f85149;
             border: 1px solid #f85149;
         }
-        #next-btn, #restart-btn {
-            display: none;
-            margin-top: 15px;
+        #next-btn, #start-quiz-btn, #restart-btn {
+            display: block;
+            margin-top: 12px;
             background: #238636;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 12px 18px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             font-family: inherit;
             width: 100%;
             transition: background 0.2s;
+            text-align: center;
         }
+        #next-btn { display: none; }
         #next-btn:hover { background: #2ea043; }
-        #restart-btn { background: #1f6feb; }
-        #restart-btn:hover { background: #388bfd; }
+        #start-quiz-btn, #restart-btn { background: #1f6feb; }
+        #start-quiz-btn:hover, #restart-btn:hover { background: #388bfd; }
+        .hub-link-btn {
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            text-align: center;
+            font-weight: bold;
+        }
+        .hub-link-btn:hover {
+            border-color: #0fff95;
+            color: #0fff95;
+            background: #30363d;
+        }
     </style>
 </head>
 <body>
@@ -121,11 +170,22 @@
 <div class="container" id="quiz-box">
     <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" class="rover-img">
     <h2>Rover Telemetry Lab</h2>
-    <div class="subtitle">Session 1: Drift Analysis Check</div>
-    <p id="question-text">Loading telemetry data...</p>
-    <div id="answers-container"></div>
-    <div id="feedback"></div>
-    <button id="next-btn" onclick="nextQuestion()">Next Command ➡️</button>
+    <div class="subtitle">29.08.2026 — Control Center Open</div>
+    
+    <div id="content-area">
+        <!-- Initial Lab Instructions Screen -->
+        <div class="instruction-box">
+            <h3>📋 Cadet Mission Instructions:</h3>
+            <ol>
+                <li>Install and open your code editor (like <strong>Thonny</strong> or <strong>VS Code</strong>).</li>
+                <li>Open Lab-0 workspace files: <span class="highlight-file">rover_sim.py</span>, <span class="highlight-file">less-0.py</span>, and <span class="highlight-file">task-0.py</span>.</li>
+                <li>Run <span class="highlight-file">task-0.py</span> to test rover reliability across drift levels: <span class="highlight-file">0, 1.5, 5, 10</span>.</li>
+                <li>Click <strong>Start Telemetry Check</strong> below when ready!</li>
+            </ol>
+        </div>
+        <button id="start-quiz-btn" onclick="startQuiz()">Start Telemetry Check</button>
+        <a href="https://feona-oy.github.io/ai-robotics-11-14/" class="btn hub-link-btn" style="text-align: center;">⬅️ Return to FEONA Course Hub</a>
+    </div>
 </div>
 
 <script>
@@ -163,19 +223,29 @@
     let score = 0;
     let answered = false;
 
-    const textEl = document.getElementById("question-text");
-    const answersEl = document.getElementById("answers-container");
-    const feedbackEl = document.getElementById("feedback");
-    const nextBtn = document.getElementById("next-btn");
+    function startQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        loadQuestion();
+    }
 
     function loadQuestion() {
         answered = false;
-        feedbackEl.style.display = "none";
-        nextBtn.style.display = "none";
+        const box = document.getElementById("quiz-box");
+        
+        box.innerHTML = `
+            <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" class="rover-img">
+            <h2>Rover Telemetry Lab</h2>
+            <div class="subtitle">29.08.2026 — Control Center Open</div>
+            <p id="question-text">[Mission Q${currentQuestion + 1}/${quizData.length}] ${quizData[currentQuestion].question}</p>
+            <div id="answers-container"></div>
+            <div id="feedback"></div>
+            <button id="next-btn" onclick="nextQuestion()">Next Command ➡️</button>
+            <a href="https://feona-oy.github.io/ai-robotics-11-14/" class="btn hub-link-btn" style="text-align: center; margin-top: 12px;">⬅️ Return to FEONA Course Hub</a>
+        `;
 
+        const answersEl = document.getElementById("answers-container");
         const q = quizData[currentQuestion];
-        textEl.textContent = `[Mission Q${currentQuestion + 1}/${quizData.length}] ${q.question}`;
-        answersEl.innerHTML = "";
 
         q.answers.forEach((ans, index) => {
             const btn = document.createElement("button");
@@ -191,6 +261,9 @@
         answered = true;
 
         const q = quizData[currentQuestion];
+        const answersEl = document.getElementById("answers-container");
+        const feedbackEl = document.getElementById("feedback");
+        const nextBtn = document.getElementById("next-btn");
         const buttons = answersEl.getElementsByClassName("btn");
 
         for (let i = 0; i < buttons.length; i++) {
@@ -218,13 +291,14 @@
             setTimeout(() => {
                 nextBtn.style.display = "none";
                 document.getElementById("quiz-box").innerHTML = `
-                    <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 15px;">
+                    <img src="../src/rover-on-the-moon.jpeg" alt="Rover on the Moon" class="rover-img">
                     <h2>Diagnostic Complete 🚀</h2>
                     <p style="text-align: center; margin: 15px 0;">Final Score: <strong>${score} / ${quizData.length}</strong></p>
-                    <p style="text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 20px;">
-                        ${score === quizData.length ? "System nominal! You're ready for advanced robotics logic." : "Review the lab notes and run diagnostics again to optimize your score."}
+                    <p style="text-align: center; color: #8b949e; font-size: 14px; margin-bottom: 20px;">
+                        ${score === quizData.length ? "System nominal! You're ready for advanced robotics logic." : "Review your code notes and run diagnostics again to optimize your score."}
                     </p>
-                    <button id="restart-btn" class="btn" style="text-align: center;" onclick="location.reload()">🚀 Run Mission Again</button>
+                    <button id="restart-btn" class="btn" style="text-align: center;" onclick="location.reload()">🔄 Back to Mission Instructions</button>
+                    <a href="https://feona-oy.github.io/ai-robotics-11-14/" class="btn hub-link-btn" style="text-align: center; margin-top: 12px;">⬅️ Return to FEONA Course Hub</a>
                 `;
             }, 1200);
         }
@@ -234,8 +308,6 @@
         currentQuestion++;
         loadQuestion();
     }
-
-    loadQuestion();
 </script>
 </body>
 </html>
